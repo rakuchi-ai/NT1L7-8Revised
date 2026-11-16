@@ -111,7 +111,7 @@ const verbDrillQuestions = [
   { type: "fill", q: "次の動詞の過去形を入力しなさい：[ plan ]", answer: "planned", explanation: "【規則動詞】＜短母音 ＋ 子音字＞： 子音字を重ねて -ed をつける (planned)" }
 ];
 
-const CSV_FILE='NT1_L7_L8_questions.csv'; // CSVファイル名（必要に応じて questions.csv 等に変更可）
+const CSV_FILE='NT1_L7_L8_questions.csv';
 const MODES=['L7文法','L7READ','L8文法','L8READ','間違えた問題のみ','動詞の過去形特訓'];
 let ALL=[], S={mode:'L7文法',order:'seq',n:10}, Q=null, WARN=[], LSK='quiz_v1';
 let st={stock:[],rec:{}};
@@ -126,14 +126,12 @@ const norm=s=>String(s).replace(/[’‘]/g,"'").replace(/[“”]/g,'"').replac
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 
 function parseCSV(t){
-  t=t.replace(/^﻿/,'');const rows=[];let r=[],f='',q=false;
+  t=t.replace(/^\uFEFF/,'');const rows=[];let r=[],f='',q=false;
   for(let i=0;i<t.length;i++){const c=t[i];
     if(q){if(c=='"'){if(t[i+1]=='"'){f+='"';i++}else q=false}else f+=c}
     else if(c=='"')q=true;
     else if(c==','){r.push(f);f=''}
-    else if(c=='
-'||c==''){if(c==''&&t[i+1]=='
-')i++;r.push(f);f='';if(r.length>1||r[0]!=='')rows.push(r);r=[]}
+    else if(c=='\n'||c=='\r'){if(c=='\r'&&t[i+1]=='\n')i++;r.push(f);f='';if(r.length>1||r[0]!=='')rows.push(r);r=[]}
     else f+=c}
   if(f!==''||r.length){r.push(f);rows.push(r)}
   const h=rows.shift().map(x=>x.trim());
@@ -172,11 +170,7 @@ function setData(text){
       if(!a){WARN.push(`${row}行目(No.${no}): 入力問題の正解が空のため除外しました`);return}
     }else{WARN.push(`${row}行目(No.${no}): 形式は「4択」か「入力」にしてください(除外しました)`);return}
     used.add(no);
-    ALL.push({no,q:(o['問題']).replace(/
-?/g,'
-').replace(/[ 	]*
-?[ 	]*(【(?:和訳|指示)】)/,'
-$1'),c,a:fmt=='4択'?A:a,ex:o['解説']||'',
+    ALL.push({no,q:(o['問題']).replace(/\r\n?/g,'\n').replace(/[ \t]*\n?[ \t]*(【(?:和訳|指示)】)/,'\n$1'),c,a:fmt=='4択'?A:a,ex:o['解説']||'',
       unit:(o['単元']||o['分野']||'').trim()||'その他',fmt,alt:(o['別解']||'').split('|').map(x=>x.trim()).filter(Boolean)});
   });
   appendVerbDrill();
@@ -221,7 +215,7 @@ function home(){
   </div></div>`:''}
   ${(!isWrongMode && S.order==='random')?`<div class="card"><h2>出題数</h2><div class="row">${[10,20,50].map(n=>o(S.n===n,`data-n="${n}"`,n+'問')).join('')}</div></div>`:''}
   <button class="go" id="start" ${cnt?'':'disabled'}>${cnt?`演習スタート (${cnt}問)`:(isWrongMode?'間違えた問題・ストック問題はまだありません':'問題がありません')}</button>
-  <p style="text-align:center"><button class="link" id="rec">あなたの記録</button>　<button class="link" id="stock">間違えた問題・ストック一覧 (${st.stock.length}問)</button></p>`;
+  <p style="text-align:center"><button class="link" id="rec">あなたの記録</button> <button class="link" id="stock">間違えた問題・ストック一覧 (${st.stock.length}問)</button></p>`;
   app.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{S.mode=b.dataset.mode;home()});
   app.querySelectorAll('[data-order]').forEach(b=>b.onclick=()=>{S.order=b.dataset.order;home()});
   app.querySelectorAll('[data-n]').forEach(b=>b.onclick=()=>{S.n=+b.dataset.n;home()});
@@ -236,8 +230,7 @@ function start(){
   if(!p.length)return;
   Q={list:p,i:0,ok:0,ng:[],done:false};show();
 }
-function quit(){if(confirm('演習をやめてホームに戻りますか?
-(ここまでの正誤は保存されます)'))home()}
+function quit(){if(confirm('演習をやめてホームに戻りますか?\n(ここまでの正誤は保存されます)'))home()}
 function show(){
   const q=Q.list[Q.i], total=Q.list.length;
   app.innerHTML=`
