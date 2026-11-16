@@ -41,6 +41,20 @@ select{width:100%;padding:10px;border:1.5px solid var(--bd);border-radius:8px;ba
 .ch.ng{border-color:var(--ng);background:color-mix(in srgb,var(--ng) 16%,transparent)}
 .ch:disabled{cursor:default;color:inherit}
 input[type=text]{width:100%;padding:12px;border:1.5px solid var(--bd);border-radius:8px;background:var(--card);font-size:18px}
+/* 並び替え問題用スタイル */
+.sort-box{min-height:64px;padding:12px 14px;border:2px solid var(--board);border-radius:8px;background:var(--bg);margin-bottom:12px;display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:19px}
+.sort-placeholder{color:var(--mut);font-size:15px}
+.sort-chip{display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border-radius:6px;background:var(--board);color:var(--chalk);font-weight:700;border:0;cursor:pointer;font-size:18px}
+.sort-chip small{font-size:13px;opacity:.85;font-weight:400}
+.sort-chip:disabled{cursor:default}
+.sort-pool{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.sort-btn{padding:10px 14px;border:1.5px solid var(--bd);background:var(--card);border-radius:8px;cursor:pointer;font-size:18px;font-weight:700;transition:opacity .15s}
+.sort-btn small{color:var(--mut);font-weight:400;margin-right:4px}
+.sort-btn.used{opacity:.28;pointer-events:none;border-style:dashed}
+.sort-btn:disabled{cursor:default}
+.sort-ctrls{display:flex;gap:8px;margin-bottom:8px}
+.sort-ctrls button{padding:9px 14px;border:1.5px solid var(--bd);background:var(--card);border-radius:8px;cursor:pointer;font-size:15px}
+.sort-ctrls button:disabled{opacity:.4;cursor:not-allowed}
 .fb{margin-top:14px;padding:12px 14px;border-radius:8px;border-left:6px solid var(--ok);background:color-mix(in srgb,var(--ok) 10%,transparent)}
 .fb.bad{border-color:var(--ng);background:color-mix(in srgb,var(--ng) 10%,transparent)}
 .fb h3{margin:0 0 4px;font-size:18px}
@@ -113,6 +127,7 @@ const verbDrillQuestions = [
 
 const CSV_FILE='NT1_L7_L8_questions.csv';
 const MODES=['L7文法','L7READ','L8文法','L8READ','間違えた問題のみ','動詞の過去形特訓'];
+const CIRCLE_NUMS='①②③④⑤⑥⑦⑧⑨⑩⑪⑫';
 let ALL=[], S={mode:'L7文法',order:'seq',n:10}, Q=null, WARN=[], LSK='quiz_v1';
 let st={stock:[],rec:{}};
 const loadSt=()=>{
@@ -138,6 +153,24 @@ function parseCSV(t){
   return rows.map(x=>{const o={};h.forEach((k,i)=>o[k]=x[i]??'');return o});
 }
 
+function parseSortQuestion(qText, ansText){
+  const ans = ansText.trim();
+  if(!ans || ![...ans].every(ch => CIRCLE_NUMS.includes(ch))) return null;
+  const lines = qText.split('\n');
+  const idx = lines.findIndex(l => l.includes('①') && l.includes('②'));
+  if(idx === -1) return null;
+  const choiceLine = lines[idx];
+  const regex = /([①②③④⑤⑥⑦⑧⑨⑩⑪⑫])\s*([^①②③④⑤⑥⑦⑧⑨⑩⑪⑫]+)/g;
+  const items = [];
+  let m;
+  while((m = regex.exec(choiceLine)) !== null){
+    items.push({ num: m[1], word: m[2].trim() });
+  }
+  if(items.length < 2) return null;
+  const cleanLines = lines.filter((l, i) => i !== idx && !/^\s*[（(]例[：:].*[）)]\s*$/.test(l));
+  return { cleanQ: cleanLines.join('\n'), items };
+}
+
 function appendVerbDrill(){
   verbDrillQuestions.forEach((v,idx)=>{
     ALL.push({
@@ -148,7 +181,8 @@ function appendVerbDrill(){
       ex: v.explanation || '',
       unit: '動詞の過去形特訓',
       fmt: v.type === 'fill' ? '入力' : '4択',
-      alt: []
+      alt: [],
+      sortItems: null
     });
   });
 }
@@ -162,7 +196,7 @@ function setData(text){
     const row=i+2;let no=parseInt(o['No'],10);
     if(!isFinite(no)||used.has(no)){WARN.push(`${row}行目: No が空か重複しています(自動で番号を振りました。記録のため No は固定を推奨)`);no=100000+i}
     const c=['A','B','C','D'].map(k=>(o['選択肢'+k]||'').trim());
-    const fmt=(o['形式']||'').trim()||(c[0]?'4択':'入力');
+    let fmt=(o['形式']||'').trim()||(c[0]?'4択':'入力');
     const a=(o['正解']||'').trim(), A=a.toUpperCase();
     if(fmt=='4択'){
       if(c.filter(Boolean).length<2||!'ABCD'.includes(A)||A.length!=1||!c['ABCD'.indexOf(A)]){WARN.push(`${row}行目(No.${no}): 4択の選択肢か正解(A〜D)が正しくないため除外しました`);return}
@@ -170,8 +204,18 @@ function setData(text){
       if(!a){WARN.push(`${row}行目(No.${no}): 入力問題の正解が空のため除外しました`);return}
     }else{WARN.push(`${row}行目(No.${no}): 形式は「4択」か「入力」にしてください(除外しました)`);return}
     used.add(no);
-    ALL.push({no,q:(o['問題']).replace(/\r\n?/g,'\n').replace(/[ \t]*\n?[ \t]*(【(?:和訳|指示)】)/,'\n$1'),c,a:fmt=='4択'?A:a,ex:o['解説']||'',
-      unit:(o['単元']||o['分野']||'').trim()||'その他',fmt,alt:(o['別解']||'').split('|').map(x=>x.trim()).filter(Boolean)});
+    let qText=(o['問題']).replace(/\r\n?/g,'\n').replace(/[ \t]*\n?[ \t]*(【(?:和訳|指示)】)/,'\n$1');
+    let sortItems=null;
+    if(fmt=='入力'){
+      const parsedSort=parseSortQuestion(qText, a);
+      if(parsedSort){
+        fmt='並び替え';
+        qText=parsedSort.cleanQ;
+        sortItems=parsedSort.items;
+      }
+    }
+    ALL.push({no,q:qText,c,a:fmt=='4択'?A:a,ex:o['解説']||'',
+      unit:(o['単元']||o['分野']||'').trim()||'その他',fmt,alt:(o['別解']||'').split('|').map(x=>x.trim()).filter(Boolean),sortItems});
   });
   appendVerbDrill();
   LSK='quiz_v1_'+title;
@@ -228,29 +272,121 @@ function start(){
   if(S.mode==='間違えた問題のみ')p=shuffle(p);
   else if(S.order==='random')p=shuffle(p).slice(0,S.n);
   if(!p.length)return;
-  Q={list:p,i:0,ok:0,ng:[],done:false};show();
+  Q={list:p,i:0,ok:0,ng:[],done:false,sortSel:[]};show();
 }
 function quit(){if(confirm('演習をやめてホームに戻りますか?\n(ここまでの正誤は保存されます)'))home()}
+
+function renderSortUI(q){
+  const sel=Q.sortSel;
+  const box=$('#sort-box');
+  if(sel.length===0){
+    box.innerHTML='<span class="sort-placeholder">下の語句ボタンを押して英文を組み立ててください</span>';
+  }else{
+    box.innerHTML=sel.map((idx,pos)=>{
+      const it=q.sortItems[idx];
+      return `<button type="button" class="sort-chip" data-pos="${pos}" ${Q.done?'disabled':''}><small>${esc(it.num)}</small>${esc(it.word)}</button>`;
+    }).join('');
+    if(!Q.done){
+      box.querySelectorAll('.sort-chip').forEach(btn=>{
+        btn.onclick=()=>{
+          const pos=+btn.dataset.pos;
+          Q.sortSel=Q.sortSel.slice(0,pos);
+          renderSortUI(q);
+        };
+      });
+    }
+  }
+  document.querySelectorAll('.sort-btn').forEach((btn,idx)=>{
+    btn.classList.toggle('used',sel.includes(idx));
+    btn.disabled=Q.done;
+  });
+  const backBtn=$('#sort-back'), clrBtn=$('#sort-clear'), okBtn=$('#ok');
+  if(backBtn) backBtn.disabled=Q.done || sel.length===0;
+  if(clrBtn) clrBtn.disabled=Q.done || sel.length===0;
+  if(okBtn) okBtn.disabled=Q.done || sel.length!==q.sortItems.length;
+}
+
 function show(){
   const q=Q.list[Q.i], total=Q.list.length;
+  Q.sortSel=[];
+  let inputHtml='';
+  if(q.fmt=='4択'){
+    inputHtml=q.c.map((t,i)=>t?`<button class="ch" data-k="${'ABCD'[i]}"><b>${'ABCD'[i]}</b>${esc(t)}</button>`:'').join('');
+  }else if(q.fmt=='並び替え'){
+    inputHtml=`
+      <div class="sort-box" id="sort-box"></div>
+      <div class="sort-pool" id="sort-pool">
+        ${q.sortItems.map((it,idx)=>`<button type="button" class="sort-btn" data-idx="${idx}"><small>${esc(it.num)}</small>${esc(it.word)}</button>`).join('')}
+      </div>
+      <div class="sort-ctrls">
+        <button type="button" id="sort-back">← 1つ戻る</button>
+        <button type="button" id="sort-clear">リセット</button>
+      </div>
+      <div class="acts"><button class="next" id="ok" disabled>回答する (${q.sortItems.length}語選択で有効)</button></div>
+    `;
+  }else{
+    inputHtml=`<input type="text" id="ans" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="答えを入力"><div class="acts"><button class="next" id="ok">回答する</button></div>`;
+  }
+
   app.innerHTML=`
   <div class="bar"><span>${Q.i+1} / ${total}問 ・ 正解 ${Q.ok}</span><button id="quit">ホームに戻る</button></div>
   <div class="prog"><i style="width:${Q.i/total*100}%"></i></div>
   <div class="card"><div class="unit">${esc(q.unit)} (${esc(q.fmt)})</div>
   <p class="q">${esc(q.q)}</p>
-  <div id="in">${q.fmt=='4択'
-    ?q.c.map((t,i)=>t?`<button class="ch" data-k="${'ABCD'[i]}"><b>${'ABCD'[i]}</b>${esc(t)}</button>`:'').join('')
-    :`<input type="text" id="ans" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="答えを入力"><div class="acts"><button class="next" id="ok">回答する</button></div>`}
-  </div><div id="fb"></div></div>`;
+  <div id="in">${inputHtml}</div><div id="fb"></div></div>`;
   $('#quit').onclick=quit;
-  if(q.fmt=='4択')app.querySelectorAll('.ch').forEach(b=>b.onclick=()=>judge(b.dataset.k));
-  else{const a=$('#ans');a.focus();$('#ok').onclick=()=>judge(a.value);a.onkeydown=e=>{if(e.key=='Enter'&&!e.isComposing)judge(a.value)}}
+
+  if(q.fmt=='4択'){
+    app.querySelectorAll('.ch').forEach(b=>b.onclick=()=>judge(b.dataset.k));
+  }else if(q.fmt=='並び替え'){
+    renderSortUI(q);
+    app.querySelectorAll('.sort-btn').forEach(b=>{
+      b.onclick=()=>{
+        const idx=+b.dataset.idx;
+        if(!Q.done && !Q.sortSel.includes(idx)){
+          Q.sortSel.push(idx);
+          renderSortUI(q);
+        }
+      };
+    });
+    $('#sort-back').onclick=()=>{if(!Q.done && Q.sortSel.length){Q.sortSel.pop();renderSortUI(q);}};
+    $('#sort-clear').onclick=()=>{if(!Q.done && Q.sortSel.length){Q.sortSel=[];renderSortUI(q);}};
+    $('#ok').onclick=()=>{
+      if(Q.sortSel.length===q.sortItems.length){
+        const ansNums=Q.sortSel.map(idx=>q.sortItems[idx].num).join('');
+        judge(ansNums);
+      }
+    };
+  }else{
+    const a=$('#ans');a.focus();
+    $('#ok').onclick=()=>judge(a.value);
+    a.onkeydown=e=>{if(e.key=='Enter'&&!e.isComposing)judge(a.value)};
+  }
 }
+
+function formatSortAnswer(q){
+  if(!q.sortItems) return q.a;
+  const words=[...q.a].map(num=>{
+    const it=q.sortItems.find(x=>x.num===num);
+    return it?it.word:'';
+  }).filter(Boolean).join(' ');
+  return `${q.a} （${words}）`;
+}
+
 function judge(v){
   const q=Q.list[Q.i];if(Q.done)return;
   let ok,ansText;
-  if(q.fmt=='4択'){ok=v==q.a;ansText=q.a+'. '+q.c['ABCD'.indexOf(q.a)];}
-  else{if(!norm(v))return;ok=[q.a,...q.alt].some(a=>norm(a)==norm(v));ansText=q.a+(q.alt.length?`(別解: ${q.alt.join(' / ')})`:'');}
+  if(q.fmt=='4択'){
+    ok=v==q.a;
+    ansText=q.a+'. '+q.c['ABCD'.indexOf(q.a)];
+  }else if(q.fmt=='並び替え'){
+    ok=(v===q.a);
+    ansText=formatSortAnswer(q);
+  }else{
+    if(!norm(v))return;
+    ok=[q.a,...q.alt].some(a=>norm(a)==norm(v));
+    ansText=q.a+(q.alt.length?`(別解: ${q.alt.join(' / ')})`:'');
+  }
   Q.done=true;Q.t=Date.now();
   const wasStock=st.stock.includes(q.no), auto=ok&&wasStock, added=!ok&&!wasStock;
   st.rec[q.no]=ok?'c':'x';
@@ -258,8 +394,15 @@ function judge(v){
   else{Q.ng.push(q);if(!wasStock)st.stock.push(q.no)}
   save();
   const lbl=()=>st.stock.includes(q.no)?'★ ストック済み':(auto?'☆ まだ自信がないのでストックに戻す':'☆ ストックに入れる');
-  if(q.fmt=='4択')app.querySelectorAll('.ch').forEach(b=>{b.disabled=true;if(b.dataset.k==q.a)b.classList.add('ok');else if(b.dataset.k==v)b.classList.add('ng')});
-  else{$('#ans').disabled=true;$('#ok').remove()}
+  if(q.fmt=='4択'){
+    app.querySelectorAll('.ch').forEach(b=>{b.disabled=true;if(b.dataset.k==q.a)b.classList.add('ok');else if(b.dataset.k==v)b.classList.add('ng')});
+  }else if(q.fmt=='並び替え'){
+    renderSortUI(q);
+    $('#ok').remove();
+    $('.sort-ctrls').remove();
+  }else{
+    $('#ans').disabled=true;$('#ok').remove();
+  }
   const last=Q.i==Q.list.length-1;
   $('#fb').innerHTML=`<div class="fb${ok?'':' bad'}"><h3>${ok?'◯ 正解':'✕ 不正解'}</h3>
     <p>正解: <span class="ans">${esc(ansText)}</span></p><p>${esc(q.ex)}</p>${auto?'<p class="sub">ストックした問題に正答したので、正答扱いになりストックから外れました。</p>':''}${added?'<p class="sub">間違えた問題なので、「間違えた問題のみ」に追加しました。</p>':''}</div>
@@ -277,7 +420,7 @@ function result(){
   const t=Q.list.length;
   app.innerHTML=`<div class="card"><h2>結果</h2><div class="big">${Q.ok} / ${t}</div>
   <p style="text-align:center;margin:0">正答率 ${Math.round(Q.ok/t*100)}%</p></div>
-  ${Q.ng.length?`<div class="card"><h2>間違えた問題(${Q.ng.length}問・「間違えた問題のみ」に追加済み)</h2>${Q.ng.map(q=>`<div class="li"><div class="q" style="font-size:17px;margin:0">${esc(q.q)}</div><div>正解: <span class="ans">${esc(q.a.length==1&&q.fmt=='4択'?q.a+'. '+q.c['ABCD'.indexOf(q.a)]:q.a)}</span></div></div>`).join('')}</div>`:''}
+  ${Q.ng.length?`<div class="card"><h2>間違えた問題(${Q.ng.length}問・「間違えた問題のみ」に追加済み)</h2>${Q.ng.map(q=>`<div class="li"><div class="q" style="font-size:17px;margin:0">${esc(q.q)}</div><div>正解: <span class="ans">${esc(q.fmt=='4択'?q.a+'. '+q.c['ABCD'.indexOf(q.a)]:(q.fmt=='並び替え'?formatSortAnswer(q):q.a))}</span></div></div>`).join('')}</div>`:''}
   <button class="go" id="h">ホームに戻る</button>`;
   $('#h').onclick=home;scrollTo(0,0);
 }
@@ -317,7 +460,7 @@ function stockView(){
   app.innerHTML=`<div class="bar"><span>間違えた問題・ストック一覧(${items.length}問)</span><button id="b">ホームに戻る</button></div>
   <div class="card">${items.length?items.map(q=>`<div class="li"><div class="unit">${esc(q.unit)}(${q.fmt})</div>
     <div class="q" style="font-size:17px;margin:0 0 4px">${esc(q.q)}</div>
-    <div>正解: <span class="ans">${esc(q.fmt=='4択'?q.a+'. '+q.c['ABCD'.indexOf(q.a)]:q.a)}</span></div>
+    <div>正解: <span class="ans">${esc(q.fmt=='4択'?q.a+'. '+q.c['ABCD'.indexOf(q.a)]:(q.fmt=='並び替え'?formatSortAnswer(q):q.a))}</span></div>
     <div style="color:var(--mut);font-size:14px">${esc(q.ex)}</div>
     <button class="link" data-r="${q.no}">リストから外す</button></div>`).join(''):'<p>間違えた問題・ストックした問題はまだありません。演習で間違えた問題や、「ストック」を押した問題がここに溜まります。</p>'}</div>`;
   $('#b').onclick=home;
