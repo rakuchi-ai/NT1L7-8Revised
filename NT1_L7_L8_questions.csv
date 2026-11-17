@@ -235,25 +235,25 @@ Bob and I are listening to music in the living room. ＜My brother＞
 93,L7文法,入力,"次の英文の下線部をカッコ内の語句に置き換えて，全文を書きなさい。
 Are they eating lunch in the classroom? ＜Tom＞
 （［they］を置き換える）",,,,,Is Tom eating lunch in the classroom?,,主語が単数なので Is。,,
-94,L7文法,入力,"日本文の意味を表すように，カッコ内の語句を並べ換えてその番号を順に答えなさい。ただし，run は正しい形に直すこと。
+94,L7文法,入力,"日本文の意味を表すように，カッコ内の語句を並べ換えてその番号を順に答えなさい。
 【和訳】ジムとトムは今，彼らの犬と一緒に走っていますか。
-① are　② dog　③ run　④ their　⑤ Jim and Tom　⑥ with
+① are　② dog　③ running　④ their　⑤ Jim and Tom　⑥ with
 → (　　　) now?
 （例：③①②）",,,,,①⑤③⑥④②,153642,"正解の英文: Are Jim and Tom running with their dog now?
 現在進行形の疑問文は be動詞を主語の前に出す。",,
-95,L7文法,入力,"日本文の意味を表すように，カッコ内の語句を並べ換えてその番号を順に答えなさい。ただし，want は正しい形に直すこと。
+95,L7文法,入力,"日本文の意味を表すように，カッコ内の語句を並べ換えてその番号を順に答えなさい。
 【和訳】ジョンは小型のコンピューターを欲しがっています。
-① small　② want　③ John　④ computer　⑤ a
+① small　② wants　③ John　④ computer　⑤ a
 （例：③①②）",,,,,③②⑤①④,32514,"正解の英文: John wants a small computer.
 want は進行形にしない。主語が 3人称単数なので wants。",,
-96,L7文法,入力,"日本文の意味を表すように，カッコ内の語句を並べ換えてその番号を順に答えなさい。ただし，have は正しい形に直すこと。
+96,L7文法,入力,"日本文の意味を表すように，カッコ内の語句を並べ換えてその番号を順に答えなさい。
 【和訳】カヨのお姉さんは髪が長いです。
-① hair　② sister　③ have　④ Kayo's　⑤ long
+① hair　② sister　③ has　④ Kayo's　⑤ long
 （例：③①②）",,,,,④②③⑤①,42351,"正解の英文: Kayo's sister has long hair.
 「髪が長い」＝ have long hair。3人称単数なので has。",,
-97,L7文法,入力,"日本文の意味を表すように，カッコ内の語句を並べ換えてその番号を順に答えなさい。ただし，study は正しい形に直すこと。
+97,L7文法,入力,"日本文の意味を表すように，カッコ内の語句を並べ換えてその番号を順に答えなさい。
 【和訳】私たちは今，勉強しているところではありません。
-① not　② we　③ study　④ are　⑤ now
+① not　② we　③ studying　④ are　⑤ now
 （例：③①②）",,,,,②④①③⑤,24135,"正解の英文: We are not studying now.
 現在進行形の否定文は be動詞の後ろに not。",,
 98,L7文法,入力,"次の英文の誤りを直して，全文を書きなさい。
@@ -284,9 +284,9 @@ He ［walks our dog］ every day.（［　］が答えの中心となる疑問�
 「何をしているのですか。本を読んでいるのですか。」",,,,,What are you doing? Are you reading a book?,,現在進行形の疑問文は be動詞を主語の前に出す。,,
 111,L7文法,入力,"次の英文を疑問文に書き換えなさい。
 She is sleeping.",,,,,Is she sleeping?,,現在進行形の疑問文は be動詞を主語の前に出す。,,
-112,L7文法,入力,"日本文の意味を表すように，カッコ内の語を並べ換えてその番号を順に答えなさい。ただし，動詞を適当な形に変えること。
+112,L7文法,入力,"日本文の意味を表すように，カッコ内の語を並べ換えてその番号を順に答えなさい。
 【和訳】私はあなたのお祖父さんのためにケーキを作っているところです。
-① cake　② your　③ make　④ grandfather　⑤ a　⑥ I'm　⑦ for
+① cake　② your　③ making　④ grandfather　⑤ a　⑥ I'm　⑦ for
 （例：③①②）",,,,,⑥③⑤①⑦②④,6351724,"正解の英文: I'm making a cake for your grandfather.
 現在進行形は〈be動詞＋…ing形〉。",,
 113,L7文法,入力,"次の質問に英語で答えなさい。
@@ -393,9 +393,9 @@ B: She (     )(     ) lunch. She (     ) cooking very much.
 ① computer　② is　③ using　④ who　⑤ your
 （例：③①②）",,,,,④②③⑤①,42351,"正解の英文: Who is using your computer?
 Who が主語の疑問文は〈Who＋is＋…ing〉。",,
-150,L7文法,入力,"【応用・並び替え】語句を並べ替えて，日本文の意味を表す英文を完成させ，その番号を順に答えなさい。（動詞は正しい形に直すこと）
+150,L7文法,入力,"【応用・並び替え】語句を並べ替えて，日本文の意味を表す英文を完成させ，その番号を順に答えなさい。
 【和訳】私のおばは大きな犬を2匹飼っています。
-① two　② have　③ big　④ aunt　⑤ dogs　⑥ my
+① two　② has　③ big　④ aunt　⑤ dogs　⑥ my
 ※ aunt＝おば
 （例：③①②）",,,,,⑥④②①③⑤,642135,"正解の英文: My aunt has two big dogs.
 have は状態動詞なので現在形。主語が3人称単数なので has。",,
@@ -404,7 +404,7 @@ have は状態動詞なので現在形。主語が3人称単数なので has。"
 ① father　② know　③ song　④ does　⑤ well　⑥ your　⑦ this
 （例：③①②）",,,,,④⑥①②⑦③⑤,4612735,"正解の英文: Does your father know this song well?
 know は進行形にしない。現在形の疑問文は Does ～?。",,
-152,L7文法,入力,"【応用・並び替え】語句を並べ替えて，日本文の意味を表す英文を完成させ，その番号を順に答えなさい。（動詞は正しい形に直すこと）
+152,L7文法,入力,"【応用・並び替え】語句を並べ替えて，日本文の意味を表す英文を完成させ，その番号を順に答えなさい。
 【和訳】私の祖父は今，庭で花に水をやっています。
 ① is　② garden　③ my grandfather　④ the　⑤ in　⑥ watering　⑦ flowers
 → (　　　) now.
@@ -685,15 +685,15 @@ bring ～ to … ＝「…に～をもたらす」。",,
 → (　　　) for the report?
 （例：③①②）",,,,,②⑤⑥①④③,256143,"正解の英文: Do you have any good ideas for the report?
 have は状態動詞なので Do ～ have ～?。",,
-235,L7READ,入力,"【応用・並び替え】語句を並べ替えて，日本文の意味を表す英文を完成させ，その番号を順に答えなさい。（動詞は正しい形に直すこと）
+235,L7READ,入力,"【応用・並び替え】語句を並べ替えて，日本文の意味を表す英文を完成させ，その番号を順に答えなさい。
 【和訳】バートとアキは今，ホスピタル・クラウンについてのレポートを書いているところです。
-① are　② report　③ write　④ Burt and Aki　⑤ a
+① are　② report　③ writing　④ Burt and Aki　⑤ a
 → (　　　) about hospital clowns now.
 （例：③①②）",,,,,④①③⑤②,41352,"正解の英文: Burt and Aki are writing a report about hospital clowns now.
 write は e をとって writing。",,
-236,L7READ,入力,"【応用・並び替え】語句を並べ替えて，日本文の意味を表す英文を完成させ，その番号を順に答えなさい。（動詞は正しい形に直すこと）
+236,L7READ,入力,"【応用・並び替え】語句を並べ替えて，日本文の意味を表す英文を完成させ，その番号を順に答えなさい。
 【和訳】家族は今，子供たちのことを心配しています。
-① are　② now　③ family members　④ worry　⑤ about　⑥ their children
+① are　② now　③ family members　④ worrying　⑤ about　⑥ their children
 （例：③①②）",,,,,③①④⑤⑥②,314562,"正解の英文: Family members are worrying about their children now.
 worry → worrying（y はそのまま ing）。",,
 237,L7READ,入力,"【応用・並び替え】語句を並べ替えて，日本文の意味を表す英文を完成させ，その番号を順に答えなさい。
@@ -1001,17 +1001,15 @@ John／本を１冊読んだ／おととい",,,,,John read a book the day before
 347,L8文法,入力,"例にならって，表の内容に合うように英文を書きなさい。
 例 Ken／サッカーをした／昨日の午後 → Ken played soccer yesterday afternoon.
 Bob and Tom／数学を勉強した／２時間前",,,,,Bob and Tom studied math two hours ago.,,過去の文。時を表す語句は文末に置く。,,
-348,L8文法,入力,"日本文の意味を表すように，カッコ内の語句を並べ換えてその番号を順に答えなさい。ただし，足りない語を1語補いなさい。
+348,L8文法,入力,"日本文の意味を表すように，カッコ内の語句を並べ換えてその番号を順に答えなさい。
 【和訳】彼は自分の腕時計を机の上に置きました。
-① desk　② he　③ his　④ on　⑤ the　⑥ watch
-（補う語は番号に含めず，並べ替えた番号だけ答える）
-（例：③①②）",,,,,②③⑥④⑤①,236451,"正解の英文: He put his watch on the desk.
+① desk　② he　③ his　④ on　⑤ the　⑥ watch　⑦ put
+（例：③①②）",,,,,②⑦③⑥④⑤①,2736451,"正解の英文: He put his watch on the desk.
 「置く」＝ put（過去形も put）。",,
-349,L8文法,入力,"日本文の意味を表すように，カッコ内の語句を並べ換えてその番号を順に答えなさい。ただし，足りない語を1語補いなさい。
+349,L8文法,入力,"日本文の意味を表すように，カッコ内の語句を並べ換えてその番号を順に答えなさい。
 【和訳】エミはパーティーにチョコレートケーキを持ってきました。
-① Emi　② chocolate cake　③ party　④ the　⑤ a　⑥ to
-（補う語は番号に含めず，並べ替えた番号だけ答える）
-（例：③①②）",,,,,①⑤②⑥④③,152643,"正解の英文: Emi brought a chocolate cake to the party.
+① Emi　② chocolate cake　③ party　④ the　⑤ a　⑥ to　⑦ brought
+（例：③①②）",,,,,①⑦⑤②⑥④③,1752643,"正解の英文: Emi brought a chocolate cake to the party.
 「持ってくる」＝ bring（過去形 brought）。",,
 350,L8文法,入力,"【Ayaの日記】
 Yesterday my grandfather ① ( take ) me to Kyoto. We ② ( go ) there by train. First, we visited Kiyomizu-dera. I took a lot of photos there. Then, we ④ ( eat ) lunch at a Japanese restaurant. Finally, we went shopping in a department store. I ⑥ ( enjoy ) the trip very much. I ⑦ ( see ) a lot of people from abroad in Kyoto yesterday.
@@ -1034,9 +1032,9 @@ I took a lot of photos there.
 356,L8文法,4択,"【Ayaの日記】
 A young man spoke to us in English at the station.
 下線部の日本語訳として最も適当なものを選びなさい。",駅で若い男性が私たちに英語で話しかけてきました。,駅で私たちは若い男性に英語で話しかけました。,駅で若い男性が英語を教えてくれました。,駅で私たちは若い男性と日本語で話しました。,A,,speak to ～ ＝「～に話しかける」。,,
-357,L8文法,入力,"日本文の意味を表すように，カッコ内の語を並べ換えてその番号を順に答えなさい。ただし，動詞を適当な形に変えなさい。
+357,L8文法,入力,"日本文の意味を表すように，カッコ内の語を並べ換えてその番号を順に答えなさい。
 【和訳】私は祖母のためにケーキを買いました。
-① cake　② I　③ for　④ buy　⑤ grandmother　⑥ a　⑦ my
+① cake　② I　③ for　④ bought　⑤ grandmother　⑥ a　⑦ my
 （例：③①②）",,,,,②④⑥①③⑦⑤,2461375,"正解の英文: I bought a cake for my grandmother.
 buy の過去形は bought。",,
 358,L8文法,入力,"【Ayaの日記】
